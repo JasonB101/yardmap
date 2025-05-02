@@ -1,0 +1,33 @@
+{
+  "name": "junkyard-map",
+  "version": "1.0.0",
+  "description": "A map application for self-service junkyards",
+  "main": "server/index.ts",
+  "scripts": {
+    "start": "node dist/server/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon --watch server --exec ts-node server/index.ts",
+    "client": "cd client && npm start",
+    "build": "tsc && cd client && npm run build",
+    "install-all": "npm install && cd client && npm install"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "@types/morgan": "^1.9.9",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.32",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
