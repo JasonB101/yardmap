@@ -12,9 +12,7 @@
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
     "client": "cd client; npm start",
     "install-all": "npm install; cd client; npm install",
-    "build": "cd server && npm install && npm install typescript @types/express @types/cors @types/morgan @types/node && npm run build",
-    "heroku-cleanup": "npx patch-package",
-    "heroku-postbuild": "echo 'Building server...' && npm run build && echo 'Building client...' && (cd client && npm install --only=dev && npm install && npm run build) && echo 'Verifying build...' && (cd client && ls -la build) && echo 'Copying build files...' && (cd client && mkdir -p ../server/public && cp -r build/* ../server/public/)"
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
