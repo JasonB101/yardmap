@@ -11,8 +11,51 @@ import axios from 'axios';
 import RouteIcon from '@mui/icons-material/Route';
 import PushPinIcon from '@mui/icons-material/PushPin';
 
+// Theme configuration
+const appTheme = {
+  colors: {
+    primary: '#2C3E50',      // Dark blue-gray
+    secondary: '#E74C3C',    // Red
+    background: '#ECF0F1',   // Light gray
+    surface: '#FFFFFF',      // White
+    border: {
+      light: '#BDC3C7',      // Light gray
+      dark: '#7F8C8D',       // Dark gray
+    },
+    text: {
+      primary: '#2C3E50',    // Dark blue-gray
+      secondary: '#7F8C8D',  // Dark gray
+    },
+    cork: {
+      light: '#A67C52',      // Natural light wood
+      dark: '#8B4513'        // Saddle brown
+    }
+  },
+  shadows: {
+    outer: '0 5px 10px rgba(0,0,0,0.1)',
+    inner: 'inset 0 0 10px rgba(0,0,0,0.1)',
+    map: '0 2px 4px rgba(0,0,0,0.1)'
+  },
+  borderRadius: {
+    outer: '6px',
+    inner: '3px'
+  }
+};
+
 // Create a theme instance
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: appTheme.colors.primary,
+    },
+    secondary: {
+      main: appTheme.colors.secondary,
+    },
+    background: {
+      default: appTheme.colors.background,
+    },
+  },
+});
 
 // Configure axios
 const api = axios.create({
@@ -246,117 +289,169 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div>
           <AppBar position="static" sx={{ 
-            backgroundColor: '#BCAAA4',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            backgroundColor: appTheme.colors.cork.dark,
+            boxShadow: appTheme.shadows.outer
           }}>
             <Toolbar>
-              <PushPinIcon sx={{ mr: 1, fontSize: 28 }} />
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <PushPinIcon sx={{ mr: 1, fontSize: 28, color: appTheme.colors.surface }} />
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: appTheme.colors.surface }}>
                 Yard Map
               </Typography>
-              <Button color="inherit" onClick={() => setIsFormOpen(true)}>
-                Add Junkyard
+              <Button 
+                variant="contained"
+                onClick={() => setIsFormOpen(true)}
+                sx={{
+                  backgroundColor: appTheme.colors.surface,
+                  color: appTheme.colors.primary,
+                  borderRadius: '20px',
+                  px: 3,
+                  py: 1,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  '&:hover': {
+                    backgroundColor: appTheme.colors.cork.light,
+                    color: appTheme.colors.primary,
+                    boxShadow: '0 3px 6px rgba(0,0,0,0.12)'
+                  },
+                  '&:active': {
+                    backgroundColor: appTheme.colors.cork.dark,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }
+                }}
+              >
+                New Yard
               </Button>
             </Toolbar>
           </AppBar>
 
           <Container maxWidth="lg" sx={{ mt: 4 }}>
-            <Box sx={{ position: 'relative' }}>
-              <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={center}
-                  zoom={4}
-                  onLoad={onMapLoad}
-                  onUnmount={onMapUnmount}
-                  onClick={handleMapClick}
-                  options={{
-                    styles: mapStyles,
-                    disableDefaultUI: true,
-                    zoomControl: true,
-                    streetViewControl: true,
-                    mapTypeControl: true,
-                    fullscreenControl: true,
-                    gestureHandling: 'greedy'
-                  }}
-                >
-                  {junkyards.map((junkyard) => (
-                    <Marker
-                      key={junkyard._id}
-                      position={junkyard.location}
-                      onClick={() => handleMarkerClick(junkyard)}
-                    />
-                  ))}
-                </GoogleMap>
-              </LoadScript>
-
-              {selectedJunkyard && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: LAYOUT.INFO_OFFSET.BOTTOM,
-                    left: LAYOUT.INFO_OFFSET.LEFT,
-                    width: '300px',
-                    background: 'white',
-                    border: 'none',
-                    borderRadius: '2px',
-                    padding: '12px',
-                    zIndex: 1000
-                  }}
-                >
-                  <Button
-                    onClick={() => {
-                      setSelectedJunkyard(null);
-                      setDirections(null);
-                      setDistanceInfo(null);
-                    }}
-                    sx={{
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      minWidth: '32px',
-                      height: '32px',
-                      padding: '4px',
-                      fontSize: '20px',
-                      color: 'text.secondary',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.04)'
-                      }
+            <Box sx={{ 
+              position: 'relative',
+              padding: '10px',
+              background: `linear-gradient(145deg, ${appTheme.colors.cork.light}, ${appTheme.colors.cork.dark})`,
+              borderRadius: appTheme.borderRadius.outer,
+              boxShadow: `
+                ${appTheme.shadows.outer},
+                ${appTheme.shadows.inner},
+                0 0 0 1px rgba(0,0,0,0.1)
+              `,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: '5px',
+                left: '5px',
+                right: '5px',
+                bottom: '5px',
+                background: `linear-gradient(145deg, ${appTheme.colors.surface}, ${appTheme.colors.background})`,
+                borderRadius: appTheme.borderRadius.inner,
+                zIndex: 1,
+                boxShadow: appTheme.shadows.inner
+              }
+            }}>
+              <Box sx={{ 
+                position: 'relative',
+                zIndex: 2,
+                boxShadow: appTheme.shadows.map,
+                borderRadius: appTheme.borderRadius.inner,
+                overflow: 'hidden'
+              }}>
+                <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={center}
+                    zoom={4}
+                    onLoad={onMapLoad}
+                    onUnmount={onMapUnmount}
+                    onClick={handleMapClick}
+                    options={{
+                      styles: mapStyles,
+                      disableDefaultUI: true,
+                      zoomControl: true,
+                      streetViewControl: true,
+                      mapTypeControl: true,
+                      fullscreenControl: true,
+                      gestureHandling: 'greedy'
                     }}
                   >
-                    ×
-                  </Button>
-                  <JunkyardInfo 
-                    junkyard={selectedJunkyard} 
-                    onClose={() => {
-                      setSelectedJunkyard(null);
-                      setDirections(null);
-                      setDistanceInfo(null);
+                    {junkyards.map((junkyard) => (
+                      <Marker
+                        key={junkyard._id}
+                        position={junkyard.location}
+                        onClick={() => handleMarkerClick(junkyard)}
+                      />
+                    ))}
+                  </GoogleMap>
+                </LoadScript>
+
+                {selectedJunkyard && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: LAYOUT.INFO_OFFSET.BOTTOM,
+                      left: LAYOUT.INFO_OFFSET.LEFT,
+                      width: '300px',
+                      background: 'white',
+                      border: 'none',
+                      borderRadius: '2px',
+                      padding: '12px',
+                      zIndex: 1000
                     }}
-                    onDelete={() => handleDeleteJunkyard(selectedJunkyard._id)}
-                    onUpdate={handleUpdateJunkyard}
-                    onCalculateDistance={handleCalculateDistance}
-                    distanceInfo={distanceInfo}
-                    onClearRoute={clearRoute}
-                  />
-                </Box>
-              )}
+                  >
+                    <Button
+                      onClick={() => {
+                        setSelectedJunkyard(null);
+                        setDirections(null);
+                        setDistanceInfo(null);
+                      }}
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        minWidth: '32px',
+                        height: '32px',
+                        padding: '4px',
+                        fontSize: '20px',
+                        color: 'text.secondary',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                        }
+                      }}
+                    >
+                      ×
+                    </Button>
+                    <JunkyardInfo 
+                      junkyard={selectedJunkyard} 
+                      onClose={() => {
+                        setSelectedJunkyard(null);
+                        setDirections(null);
+                        setDistanceInfo(null);
+                      }}
+                      onDelete={() => handleDeleteJunkyard(selectedJunkyard._id)}
+                      onUpdate={handleUpdateJunkyard}
+                      onCalculateDistance={handleCalculateDistance}
+                      distanceInfo={distanceInfo}
+                      onClearRoute={clearRoute}
+                    />
+                  </Box>
+                )}
 
-              <AddJunkyardForm
-                open={isFormOpen}
-                onClose={() => setIsFormOpen(false)}
-                onSubmit={handleAddJunkyard}
-              />
+                <AddJunkyardForm
+                  open={isFormOpen}
+                  onClose={() => setIsFormOpen(false)}
+                  onSubmit={handleAddJunkyard}
+                />
 
-              <Snackbar
-                open={!!error}
-                autoHideDuration={6000}
-                onClose={handleCloseError}
-              >
-                <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-                  {error}
-                </Alert>
-              </Snackbar>
+                <Snackbar
+                  open={!!error}
+                  autoHideDuration={6000}
+                  onClose={handleCloseError}
+                >
+                  <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+                    {error}
+                  </Alert>
+                </Snackbar>
+              </Box>
             </Box>
           </Container>
         </div>
