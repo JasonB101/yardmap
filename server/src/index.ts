@@ -17,14 +17,17 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
+// API Routes
 app.use('/api/junkyards', junkyardRoutes);
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../client/build')));
 
-// Serve index.html for all routes
-app.get('*', (req, res) => {
+// Serve index.html for all routes except /api/*
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
   res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
 });
 
