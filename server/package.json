@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "rm -rf dist && tsc",
-    "heroku-postbuild": "npm run build && cd ../client && npm install && npm run build"
+    "heroku-postbuild": "echo 'Building server...' && npm run build && echo 'Building client...' && cd ../client && npm install && npm run build && echo 'Client build complete' && ls -la build"
   },
   "engines": {
     "node": ">=14.0.0"
