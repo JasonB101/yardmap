@@ -72,4 +72,9 @@ JunkyardSchema.index({ city: 1, state: 1 }); // For location-based queries
 JunkyardSchema.index({ location: '2dsphere' }); // For geospatial queries
 JunkyardSchema.index({ costRating: 1 }); // For filtering by cost rating
 
+// Drop the existing model if it exists
+if (mongoose.models.Junkyard) {
+  delete mongoose.models.Junkyard;
+}
+
 export default mongoose.model<IJunkyard>('Junkyard', JunkyardSchema); 

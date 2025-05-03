@@ -37,17 +37,18 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// MongoDB Connection
+// Start the server immediately for testing
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Try MongoDB connection in the background
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/junkyard-map';
 console.log('Attempting to connect to MongoDB at:', MONGODB_URI);
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB successfully');
-    // Start the server only after MongoDB connection is established
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
@@ -57,5 +58,5 @@ mongoose.connect(MONGODB_URI)
       code: error.code,
       codeName: error.codeName
     });
-    process.exit(1); // Exit the process if MongoDB connection fails
-  });
+    console.log('Server will continue running without MongoDB');
+  }); 
