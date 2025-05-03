@@ -20,16 +20,16 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api/junkyards', junkyardRoutes);
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, '../public')));
+// Always serve static files (for debugging)
+const publicPath = path.join(__dirname, '../public');
+console.log('Public path:', publicPath);
+app.use(express.static(publicPath));
 
-  // Serve index.html for all routes
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../public', 'index.html'));
-  });
-}
+// Serve index.html for all routes
+app.get('*', (req, res) => {
+  console.log('Serving index.html for path:', req.path);
+  res.sendFile(path.resolve(publicPath, 'index.html'));
+});
 
 // Error handling middleware
 app.use(errorHandler);
@@ -38,6 +38,7 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`API available at http://localhost:${PORT}/api/junkyards`);
+  console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 });
 
 // Try MongoDB connection in the background
