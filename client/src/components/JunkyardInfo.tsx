@@ -124,7 +124,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
       pb: 1,
       minWidth:25, 
       maxWidth: 325, 
-      backgroundColor: 'background.paper',
+      backgroundColor: '#3D3D3D',
       borderRadius: 1,
       '& > *': {
         border: 'none',
@@ -138,12 +138,17 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         border: 'none'
       }
     }}>
-      <Typography variant="h6" component="h2" sx={{ mb: 1, fontWeight: 'bold' }}>
+      <Typography variant="h6" component="h2" sx={{ 
+        mb: 1, 
+        fontWeight: 'bold',
+        color: 'white',
+        textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+      }}>
         {junkyard.name}
       </Typography>
 
       <Box sx={{ mb: 1 }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body2" sx={{ color: 'white' }}>
           {junkyard.address}
           <br />
           {junkyard.city}, {junkyard.state} {junkyard.zipCode}
@@ -152,12 +157,12 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       <Box sx={{ mb: 1 }}>
         {junkyard.phone && (
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{ color: 'white' }}>
             <strong>Phone:</strong> {formatPhone(junkyard.phone)}
           </Typography>
         )}
         {junkyard.email && (
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{ color: 'white' }}>
             <strong>Email:</strong> {junkyard.email}
           </Typography>
         )}
@@ -165,7 +170,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       {junkyard.estimatedSize > 0 && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{ color: 'white' }}>
             <strong>Estimated Size:</strong> {junkyard.estimatedSize.toLocaleString()} vehicles
           </Typography>
         </Box>
@@ -174,8 +179,8 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
       {junkyard.costRating && (
         <Box sx={{ mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" color="text.secondary">Cost Rating:</Typography>
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ color: 'white' }}>Cost Rating:</Typography>
+            <Typography variant="body2" sx={{ color: 'white' }}>
               {Array(parseInt(junkyard.costRating)).fill('$').join('')}
             </Typography>
           </Box>
@@ -184,14 +189,19 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       {junkyard.description && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography variant="body2" sx={{ color: 'white' }}>
             {junkyard.description}
           </Typography>
         </Box>
       )}
 
       <Box sx={{ mb: 1 }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+        <Typography variant="subtitle2" sx={{ 
+          fontWeight: 'bold', 
+          mb: 0.5,
+          color: 'white',
+          textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+        }}>
           Business Hours
         </Typography>
         <Box sx={{ 
@@ -202,12 +212,12 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         }}>
           {getGroupedHours().map((group, index) => (
             <React.Fragment key={index}>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body2" sx={{ color: 'white' }}>
                 {group.days.length > 1 
                   ? `${group.days[0]} - ${group.days[group.days.length - 1]}`
                   : group.days[0]}:
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ color: 'white' }}>
                 {formatHours(group.hours)}
               </Typography>
             </React.Fragment>

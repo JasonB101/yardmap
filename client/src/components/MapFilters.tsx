@@ -57,7 +57,7 @@ const MapFilters: React.FC<MapFiltersProps> = ({ onFilterChange }) => {
       sx={{
         mt: 1,
         p: 1,
-        backgroundColor: '#2D2D2D',
+        backgroundColor: '#3D3D3D',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}

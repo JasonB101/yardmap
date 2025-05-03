@@ -353,8 +353,8 @@ function App() {
               <Box sx={{ 
                 position: 'relative',
                 padding: '10px',
-                background: '#2D2D2D',
-                borderRadius: '2px',
+                background: '#3D3D3D',
+                borderRadius: '8px',
                 boxShadow: `
                   0 0 0 1px rgba(0,0,0,0.1)
                 `,
@@ -367,7 +367,7 @@ function App() {
                   position: 'relative',
                   zIndex: 2,
                   boxShadow: '0 0 0 1px rgba(0,0,0,0.1)',
-                  borderRadius: '2px',
+                  borderRadius: '8px',
                   overflow: 'hidden',
                   flex: 1
                 }}>
@@ -406,9 +406,9 @@ function App() {
                         bottom: LAYOUT.INFO_OFFSET.BOTTOM,
                         left: LAYOUT.INFO_OFFSET.LEFT,
                         width: '300px',
-                        background: '#2D2D2D',
+                        background: '#3D3D3D',
                         border: 'none',
-                        borderRadius: '2px',
+                        borderRadius: '8px',
                         padding: '12px',
                         zIndex: 1000
                       }}
