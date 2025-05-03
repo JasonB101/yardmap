@@ -329,7 +329,7 @@ function App() {
             <Box sx={{ 
               position: 'relative',
               padding: '10px',
-              background: `linear-gradient(145deg, ${appTheme.colors.cork.light}, ${appTheme.colors.cork.dark})`,
+              background: appTheme.colors.cork.dark,
               borderRadius: appTheme.borderRadius.outer,
               boxShadow: `
                 ${appTheme.shadows.outer},
