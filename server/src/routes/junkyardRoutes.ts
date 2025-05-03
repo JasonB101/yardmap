@@ -2,6 +2,7 @@ import express from 'express';
 import JunkyardModel from '../models/Junkyard';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -35,10 +36,37 @@ router.post('/geocode', async (req, res) => {
 // Get all junkyards
 router.get('/', async (req, res) => {
   try {
-    const junkyards = await JunkyardModel.find();
+    console.log('Attempting to fetch junkyards...');
+    console.log('Mongoose connection state:', mongoose.connection.readyState);
+    console.log('Mongoose connection host:', mongoose.connection.host);
+    console.log('Mongoose connection name:', mongoose.connection.name);
+    
+    const junkyards = await JunkyardModel.find().lean();
+    console.log(`Found ${junkyards.length} junkyards`);
     res.json(junkyards);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching junkyards', error });
+    console.error('Detailed error in GET /api/junkyards:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      mongooseState: mongoose.connection.readyState,
+      mongooseHost: mongoose.connection.host,
+      mongooseName: mongoose.connection.name
+    });
+    
+    if (error instanceof Error) {
+      if (error.name === 'MongoServerSelectionError') {
+        return res.status(503).json({ 
+          message: 'Database connection error',
+          error: 'Unable to connect to the database'
+        });
+      }
+    }
+    
+    res.status(500).json({ 
+      message: 'Error fetching junkyards',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
