@@ -49,7 +49,13 @@ app.listen(PORT, () => {
 });
 
 // Try to connect to MongoDB in the background
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  connectTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 5000,
+  retryWrites: true,
+  w: 'majority'
+})
   .then(() => {
     console.log('Connected to MongoDB successfully');
   })
