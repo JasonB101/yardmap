@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { GoogleMap, LoadScript, Marker, OverlayView, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 import { Container, Typography, AppBar, Toolbar, Button, Box, Alert, Snackbar } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -85,17 +85,50 @@ function App() {
     distance: string;
     duration: string;
   } | null>(null);
-  const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: 39.8283, lng: -98.5795 });
-  const [zoom, setZoom] = useState(4);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
+  const mapStateRef = useRef({
+    center: { lat: 39.8283, lng: -98.5795 },
+    zoom: 4
+  });
+
+  const getMarkerIcon = useCallback(() => {
+    if (!google) return undefined;
+    const size = 25; // Increased size to 25px
+    return {
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+        <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF0000"/>
+          <circle cx="12" cy="9" r="2.5" fill="white"/>
+        </svg>
+      `),
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size/2, size),
+    };
+  }, []);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
+    // Store initial map state
+    const center = map.getCenter()?.toJSON();
+    const zoom = map.getZoom();
+    if (center && zoom) {
+      mapStateRef.current = { center, zoom };
+    }
   }, []);
 
   const onMapUnmount = useCallback(() => {
     mapRef.current = null;
+  }, []);
+
+  const onMapIdle = useCallback(() => {
+    if (mapRef.current) {
+      const center = mapRef.current.getCenter()?.toJSON();
+      const zoom = mapRef.current.getZoom();
+      if (center && zoom) {
+        mapStateRef.current = { center, zoom };
+      }
+    }
   }, []);
 
   const clearRoute = useCallback(() => {
@@ -205,6 +238,7 @@ function App() {
     size: string;
     hasInventory: boolean;
     openWeekends: boolean;
+    hasPriceList: boolean;
   }) => {
     const filtered = junkyards.filter(junkyard => {
       const matchesCost = Number(junkyard.costRating) <= filters.costRating;
@@ -220,10 +254,12 @@ function App() {
       
       const matchesInventory = !filters.hasInventory || junkyard.inventoryLink !== '';
       
+      const matchesPriceList = !filters.hasPriceList || junkyard.priceListLink !== '';
+      
       const matchesWeekend = !filters.openWeekends || 
         (junkyard.hours.saturday !== 'Closed' && junkyard.hours.sunday !== 'Closed');
       
-      return matchesCost && matchesKeyword && matchesSize && matchesInventory && matchesWeekend;
+      return matchesCost && matchesKeyword && matchesSize && matchesInventory && matchesPriceList && matchesWeekend;
     });
     setFilteredJunkyards(filtered);
   }, [junkyards]);
@@ -231,17 +267,6 @@ function App() {
   useEffect(() => {
     setFilteredJunkyards(junkyards);
   }, [junkyards]);
-
-  // Add this check after all hooks
-  if (!GOOGLE_MAPS_API_KEY) {
-    return (
-      <Container>
-        <Typography color="error" variant="h6" sx={{ mt: 4 }}>
-          Error: Google Maps API key is not configured
-        </Typography>
-      </Container>
-    );
-  }
 
   const handleMarkerClick = (junkyard: IJunkyard) => {
     console.log('Marker clicked:', junkyard);
@@ -290,6 +315,57 @@ function App() {
       setError('Failed to delete junkyard. Please try again.');
     }
   };
+
+  const MapMarkers = useMemo(() => {
+    return (
+      <>
+        {filteredJunkyards.map((junkyard) => (
+          <Marker
+            key={junkyard._id}
+            position={junkyard.location}
+            onClick={() => handleMarkerClick(junkyard)}
+            icon={getMarkerIcon()}
+          />
+        ))}
+      </>
+    );
+  }, [filteredJunkyards, handleMarkerClick, getMarkerIcon]);
+
+  const MapContent = useMemo(() => {
+    return (
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={mapStateRef.current.center}
+        zoom={mapStateRef.current.zoom}
+        onLoad={onMapLoad}
+        onUnmount={onMapUnmount}
+        onClick={handleMapClick}
+        onIdle={onMapIdle}
+        options={{
+          styles: mapStyles,
+          disableDefaultUI: true,
+          zoomControl: true,
+          streetViewControl: true,
+          mapTypeControl: true,
+          fullscreenControl: true,
+          gestureHandling: 'greedy'
+        }}
+      >
+        {MapMarkers}
+      </GoogleMap>
+    );
+  }, [onMapLoad, onMapUnmount, handleMapClick, onMapIdle, MapMarkers]);
+
+  // Add this check after all hooks
+  if (!GOOGLE_MAPS_API_KEY) {
+    return (
+      <Container>
+        <Typography color="error" variant="h6" sx={{ mt: 4 }}>
+          Error: Google Maps API key is not configured
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -374,31 +450,7 @@ function App() {
                   flex: 1
                 }}>
                   <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={center}
-                      zoom={4}
-                      onLoad={onMapLoad}
-                      onUnmount={onMapUnmount}
-                      onClick={handleMapClick}
-                      options={{
-                        styles: mapStyles,
-                        disableDefaultUI: true,
-                        zoomControl: true,
-                        streetViewControl: true,
-                        mapTypeControl: true,
-                        fullscreenControl: true,
-                        gestureHandling: 'greedy'
-                      }}
-                    >
-                      {filteredJunkyards.map((junkyard) => (
-                        <Marker
-                          key={junkyard._id}
-                          position={junkyard.location}
-                          onClick={() => handleMarkerClick(junkyard)}
-                        />
-                      ))}
-                    </GoogleMap>
+                    {MapContent}
                   </LoadScript>
 
                   {selectedJunkyard && (
