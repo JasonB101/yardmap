@@ -12,7 +12,8 @@
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
     "client": "cd client; npm start",
     "install-all": "npm install; cd client; npm install",
-    "heroku-postbuild": "cd server && npm install && npm run build && cd ../client && npm install && npm run build"
+    "build": "cd server && npm install && npm run build",
+    "heroku-postbuild": "npm run build && cd client && npm install && npm run build"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
