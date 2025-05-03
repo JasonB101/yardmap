@@ -341,7 +341,6 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>{isEditing ? 'Edit Junkyard' : 'Add New Junkyard'}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
           {/* Left Column - Basic Info */}
