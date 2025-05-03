@@ -20,15 +20,12 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api/junkyards', junkyardRoutes);
 
-// Always serve static files (for debugging)
-const publicPath = path.join(__dirname, '../public');
-console.log('Public path:', publicPath);
-app.use(express.static(publicPath));
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../../client/build')));
 
 // Serve index.html for all routes
 app.get('*', (req, res) => {
-  console.log('Serving index.html for path:', req.path);
-  res.sendFile(path.resolve(publicPath, 'index.html'));
+  res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
 });
 
 // Error handling middleware
