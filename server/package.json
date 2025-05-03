@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "if exist dist rmdir /s /q dist && tsc",
-    "heroku-postbuild": "echo 'Building server...' && npm run build && echo 'Building client...' && cd ../client && npm install && npm run build && echo 'Client build complete' && ls -la build"
+    "build": "tsc"
   },
   "engines": {
     "node": ">=14.0.0"
