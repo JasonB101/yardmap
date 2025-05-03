@@ -41,7 +41,7 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`API available at http://localhost:${PORT}/api/junkyards`);
+  console.log(`API available at /api/junkyards`);
 });
 
 // Try MongoDB connection in the background
