@@ -107,7 +107,7 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
       thursday: '9:00-17:00',
       friday: '9:00-17:00',
       saturday: '9:00-17:00',
-      sunday: 'Closed'
+      sunday: '9:00-17:00'
     },
     costRating: initialData?.costRating || '1'
   });
