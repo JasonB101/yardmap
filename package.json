@@ -12,7 +12,7 @@
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
     "client": "cd client; npm start",
     "install-all": "npm install; cd client; npm install",
-    "heroku-postbuild": "echo 'Checking client directory...' && ls -la client && echo 'Installing client dependencies...' && cd client && npm install && echo 'Available scripts:' && npm run && echo 'Building client...' && npm run build"
+    "heroku-postbuild": "echo 'Checking client directory...' && ls -la client && echo 'Installing client dependencies...' && cd client && npm install && echo 'Available scripts in client:' && cat package.json | grep scripts && echo 'Building client...' && npm run build"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
