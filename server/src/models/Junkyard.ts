@@ -77,4 +77,4 @@ if (mongoose.models.Junkyard) {
   delete mongoose.models.Junkyard;
 }
 
-export default mongoose.model<IJunkyard>('Junkyard', JunkyardSchema); 
+export default mongoose.model<IJunkyard>('Junkyard', JunkyardSchema, 'junkyards'); 
