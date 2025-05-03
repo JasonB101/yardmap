@@ -529,7 +529,7 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
                             value={getTimeValue(day.key, true)}
                             onChange={(newValue) => handleHoursChange(day.key, newValue, getTimeValue(day.key, false))}
                             disabled={closedDays[day.key]}
-                            sx={{ width: '110px' }}
+                            sx={{ width: '140px' }}
                             slotProps={{ textField: { size: 'small' } }}
                           />
                         </LocalizationProvider>
@@ -540,7 +540,7 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
                             value={getTimeValue(day.key, false)}
                             onChange={(newValue) => handleHoursChange(day.key, getTimeValue(day.key, true), newValue)}
                             disabled={closedDays[day.key]}
-                            sx={{ width: '110px' }}
+                            sx={{ width: '140px' }}
                             slotProps={{ textField: { size: 'small' } }}
                           />
                         </LocalizationProvider>
