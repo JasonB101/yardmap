@@ -7,9 +7,9 @@
     "start": "node dist/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon --watch server --exec ts-node server/index.ts",
-    "client": "cd client && npm start",
-    "build": "tsc && cd client && npm run build",
-    "install-all": "npm install && cd client && npm install"
+    "client": "cd client; npm start",
+    "build": "tsc; cd client; npm run build",
+    "install-all": "npm install; cd client; npm install"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
