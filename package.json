@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "ts-node server/src/index.ts",
-    "build": "echo 'Building server...' && cd server && npm install && npm run build && cd .. && echo 'Building client...' && cd client && npm install && npm run build && cd ..",
+    "build": "echo 'Building server...' && cd server && npm install && npm run build && cd .. && echo 'Building client...' && cd client && npm install && REACT_APP_API_URL=/api REACT_APP_GOOGLE_MAPS_API_KEY=$REACT_APP_GOOGLE_MAPS_API_KEY npm run build && cd ..",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
     "client": "cd client; npm start",
