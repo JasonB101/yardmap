@@ -7,7 +7,7 @@
     "node": "20.x"
   },
   "scripts": {
-    "start": "node server/src/index.js",
+    "start": "ts-node server/src/index.ts",
     "build": "echo 'Building server...' && cd server && npm install && npm run build && cd .. && echo 'Building client...' && cd client && npm install && npm run build && cd ..",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
