@@ -214,9 +214,9 @@ function App() {
         junkyard.state.toLowerCase().includes(filters.keyword.toLowerCase());
       
       const matchesSize = filters.size === 'all' || 
-        (filters.size === 'small' && junkyard.estimatedSize < 1000) ||
-        (filters.size === 'medium' && junkyard.estimatedSize >= 1000 && junkyard.estimatedSize < 5000) ||
-        (filters.size === 'large' && junkyard.estimatedSize >= 5000);
+        (filters.size === 'small' && junkyard.estimatedSize < 750) ||
+        (filters.size === 'medium' && junkyard.estimatedSize >= 750 && junkyard.estimatedSize < 1500) ||
+        (filters.size === 'large' && junkyard.estimatedSize >= 1500);
       
       const matchesInventory = !filters.hasInventory || junkyard.inventoryLink !== '';
       
