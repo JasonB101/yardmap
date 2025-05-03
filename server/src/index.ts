@@ -26,18 +26,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve static files from the React app
-if (process.env.NODE_ENV === 'production') {
-  console.log('Serving static files from:', path.join(__dirname, '../../client/build'));
-  app.use(express.static(path.join(__dirname, '../../client/build')));
+app.use(express.static(path.join(__dirname, '../public')));
 
-  // Handle React routing, return all requests to React app
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api/')) {
-      console.log('Serving React app for path:', req.path);
-      res.sendFile(path.join(__dirname, '../../client/build/index.html'));
-    }
-  });
-}
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // Error handling middleware
 app.use(errorHandler);

@@ -13,7 +13,7 @@
     "client": "cd client; npm start",
     "install-all": "npm install; cd client; npm install",
     "build": "cd server && npm install && npm install typescript @types/express @types/cors @types/morgan @types/node && npm run build",
-    "heroku-postbuild": "npm run build && cd client && npm install && npm run build"
+    "heroku-postbuild": "npm run build && cd client && npm install && npm run build && mkdir -p ../server/public && cp -r build/* ../server/public/"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
