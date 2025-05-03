@@ -12,7 +12,7 @@
     "server": "nodemon --watch server --exec ts-node server/src/index.ts",
     "client": "cd client; npm start",
     "install-all": "npm install; cd client; npm install",
-    "build": "cd server && npm install && npx tsc",
+    "build": "cd server && npm install && npm install typescript && npm run build",
     "heroku-postbuild": "npm run build && cd client && npm install && npm run build"
   },
   "dependencies": {
