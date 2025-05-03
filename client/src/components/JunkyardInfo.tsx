@@ -242,20 +242,9 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
           mt: 2
         }
       }}>
-        {junkyard.website && (
-          <Button
-            variant="contained"
-            size="small"
-            href={junkyard.website}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Visit Website
-          </Button>
-        )}
         {junkyard.inventoryLink && (
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             href={junkyard.inventoryLink}
             target="_blank"
@@ -273,6 +262,17 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             rel="noopener noreferrer"
           >
             View Price List
+          </Button>
+        )}
+        {junkyard.website && (
+          <Button
+            variant="outlined"
+            size="small"
+            href={junkyard.website}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit Website
           </Button>
         )}
         <Button

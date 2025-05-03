@@ -25,6 +25,7 @@ const theme = createTheme({
     },
     background: {
       default: '#1A1A1A',
+      paper: '#3D3D3D',
     },
   },
 });
@@ -297,7 +298,8 @@ function App() {
           height: '100vh', 
           overflow: 'hidden', 
           display: 'flex', 
-          flexDirection: 'column' 
+          flexDirection: 'column',
+          backgroundColor: '#252525'
         }}>
           <AppBar position="static" sx={{ 
             backgroundColor: '#2D2D2D',
