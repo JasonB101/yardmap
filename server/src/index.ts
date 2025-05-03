@@ -41,13 +41,6 @@ app.use(errorHandler);
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/junkyard-map';
 console.log('Attempting to connect to MongoDB at:', MONGODB_URI);
 
-// Start the server immediately
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`API available at /api/junkyards`);
-});
-
 // Try to connect to MongoDB in the background
 mongoose.connect(MONGODB_URI, {
   connectTimeoutMS: 10000,
@@ -61,5 +54,9 @@ mongoose.connect(MONGODB_URI, {
   })
   .catch((err: Error) => {
     console.error('MongoDB connection error:', err);
-    console.log('Server will continue running without MongoDB');
-  }); 
+  });
+
+// Start the server immediately
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+}); 

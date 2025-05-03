@@ -57,7 +57,6 @@ const mapStyles = [
 ];
 
 function App() {
-  console.log('App component rendering');
   const [junkyards, setJunkyards] = useState<IJunkyard[]>([]);
   const [selectedJunkyard, setSelectedJunkyard] = useState<IJunkyard | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -185,7 +184,6 @@ function App() {
 
   // Add this check after all hooks
   if (!GOOGLE_MAPS_API_KEY) {
-    console.log('No Google Maps API key found');
     return (
       <Container>
         <Typography color="error" variant="h6" sx={{ mt: 4 }}>

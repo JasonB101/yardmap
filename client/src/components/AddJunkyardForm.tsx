@@ -243,30 +243,29 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('=== FORM SUBMISSION ===');
-    console.log('Initial formData:', JSON.stringify(formData, null, 2));
     
-    // First, try to geocode the address
-    const location = await geocodeAddress();
-    if (!location) {
-      console.log('Geocoding failed, not submitting');
-      return;
-    }
-
-    // Create submit data with the geocoded location
-    const submitData = {
-      ...formData,
-      location,
-      costRating: formData.costRating || '1',
-    };
-
-    console.log('Final submitData:', JSON.stringify(submitData, null, 2));
-
     try {
+      // Geocode the address first
+      const geocodeResponse = await geocodeAddress();
+
+      if (!geocodeResponse) {
+        setGeocodingError('Could not find location for this address');
+        return;
+      }
+
+      const submitData = {
+        ...formData,
+        location: {
+          lat: geocodeResponse.lat,
+          lng: geocodeResponse.lng
+        }
+      };
+
       await onSubmit(submitData);
       onClose();
     } catch (error) {
       console.error('Error saving junkyard:', error);
+      setGeocodingError('Failed to create junkyard. Please try again.');
     }
   };
 
@@ -341,196 +340,217 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>{isEditing ? 'Edit Junkyard' : 'Add New Junkyard'}</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Business Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              onPaste={handleAddressPaste}
-              required
-              helperText="Paste a full address to automatically fill in the fields below"
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="State"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              required
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="ZIP Code"
-              name="zipCode"
-              value={formData.zipCode}
-              onChange={handleChange}
-              required
-            />
-          </Grid>
+        <Grid container spacing={2}>
+          {/* Left Column - Basic Info */}
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Phone"
-              name="phone"
-              value={formatPhoneDisplay(formData.phone)}
-              onChange={handleChange}
-              required
-              helperText="Format: (XXX) XXX-XXXX"
-              inputProps={{
-                maxLength: 14, // Allow for formatting characters
-                pattern: '^\\D*\\d{3}\\D*\\d{3}\\D*\\d{4}\\D*$',
-                inputMode: 'tel'
-              }}
-            />
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Business Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onPaste={handleAddressPaste}
+                  required
+                  helperText="Paste a full address to automatically fill in the fields below"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="City"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="State"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="ZIP"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Phone"
+                  name="phone"
+                  value={formatPhoneDisplay(formData.phone)}
+                  onChange={handleChange}
+                  required
+                  helperText="Format: (XXX) XXX-XXXX"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Inventory Link"
+                  name="inventoryLink"
+                  value={formData.inventoryLink}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Price List Link"
+                  name="priceListLink"
+                  value={formData.priceListLink}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Estimated Size (vehicles)"
+                  type="number"
+                  value={formData.estimatedSize}
+                  onChange={(e) => setFormData({ ...formData, estimatedSize: parseInt(e.target.value) || 0 })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl component="fieldset">
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>Cost Rating</Typography>
+                  <RadioGroup
+                    row
+                    name="costRating"
+                    value={formData.costRating}
+                    onChange={(e) => setFormData({ ...formData, costRating: e.target.value as '1' | '2' | '3' })}
+                  >
+                    <FormControlLabel value="1" control={<Radio />} label="$" />
+                    <FormControlLabel value="2" control={<Radio />} label="$$" />
+                    <FormControlLabel value="3" control={<Radio />} label="$$$" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="Description"
+                  multiline
+                  rows={4}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                />
+              </Grid>
+            </Grid>
           </Grid>
+
+          {/* Right Column - Hours */}
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Website"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://..."
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Vehicle Inventory"
-              name="inventoryLink"
-              value={formData.inventoryLink}
-              onChange={handleChange}
-              placeholder="https://..."
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Price List"
-              name="priceListLink"
-              value={formData.priceListLink}
-              onChange={handleChange}
-              placeholder="https://..."
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Estimated Size (number of vehicles)"
-              type="number"
-              value={formData.estimatedSize}
-              onChange={(e) => setFormData({ ...formData, estimatedSize: parseInt(e.target.value) || 0 })}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl component="fieldset">
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>Cost Rating</Typography>
-              <RadioGroup
-                row
-                name="costRating"
-                value={formData.costRating}
-                onChange={(e) => setFormData({ ...formData, costRating: e.target.value as '1' | '2' | '3' })}
-              >
-                <FormControlLabel value="1" control={<Radio />} label="$" />
-                <FormControlLabel value="2" control={<Radio />} label="$$" />
-                <FormControlLabel value="3" control={<Radio />} label="$$$" />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
-              multiline
-              rows={4}
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              Business Hours
-            </Typography>
-            {days.map((day) => (
-              <Grid container spacing={1} key={day.key} sx={{ mb: 1 }}>
-                <Grid item xs={12} sm={3}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={!closedDays[day.key]}
-                        onChange={(e) => handleClosedChange(day.key, !e.target.checked)}
-                        size="small"
-                      />
-                    }
-                    label={DAY_LABELS[day.key as keyof typeof DAY_LABELS]}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <TimePicker
-                        label="Opening Time"
-                        value={getTimeValue(day.key, true)}
-                        onChange={(newValue) => handleHoursChange(day.key, newValue, getTimeValue(day.key, false))}
-                        disabled={closedDays[day.key]}
-                        sx={{ width: '100%' }}
-                      />
-                    </LocalizationProvider>
-                    <Typography variant="body2">to</Typography>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <TimePicker
-                        label="Closing Time"
-                        value={getTimeValue(day.key, false)}
-                        onChange={(newValue) => handleHoursChange(day.key, getTimeValue(day.key, true), newValue)}
-                        disabled={closedDays[day.key]}
-                        sx={{ width: '100%' }}
-                      />
-                    </LocalizationProvider>
-                  </Stack>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>Business Hours</Typography>
+                <Grid container spacing={1}>
+                  {days.map((day) => (
+                    <Grid item xs={12} key={day.key}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1
+                      }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={!closedDays[day.key]}
+                              onChange={(e) => handleClosedChange(day.key, !e.target.checked)}
+                              size="small"
+                            />
+                          }
+                          label={DAY_LABELS[day.key as keyof typeof DAY_LABELS]}
+                          sx={{ m: 0, minWidth: '90px' }}
+                        />
+                        <Box sx={{ flex: 1 }} />
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <TimePicker
+                            label="Open"
+                            value={getTimeValue(day.key, true)}
+                            onChange={(newValue) => handleHoursChange(day.key, newValue, getTimeValue(day.key, false))}
+                            disabled={closedDays[day.key]}
+                            sx={{ width: '110px' }}
+                            slotProps={{ textField: { size: 'small' } }}
+                          />
+                        </LocalizationProvider>
+                        <Typography sx={{ textAlign: 'center', width: '30px' }}>to</Typography>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <TimePicker
+                            label="Close"
+                            value={getTimeValue(day.key, false)}
+                            onChange={(newValue) => handleHoursChange(day.key, getTimeValue(day.key, true), newValue)}
+                            disabled={closedDays[day.key]}
+                            sx={{ width: '110px' }}
+                            slotProps={{ textField: { size: 'small' } }}
+                          />
+                        </LocalizationProvider>
+                      </Box>
+                    </Grid>
+                  ))}
                 </Grid>
               </Grid>
-            ))}
+            </Grid>
           </Grid>
         </Grid>
         {geocodingError && (

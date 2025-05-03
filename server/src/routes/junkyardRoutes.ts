@@ -22,7 +22,6 @@ router.post('/geocode', async (req, res) => {
 
     if (response.data.results && response.data.results.length > 0) {
       const { lat, lng } = response.data.results[0].geometry.location;
-      console.log('Geocoded address:', { lat, lng });
       res.json({ lat, lng });
     } else {
       res.status(400).json({ message: 'Could not find location for this address' });
@@ -63,20 +62,11 @@ router.get('/:id', async (req, res) => {
 // Create a new junkyard
 router.post('/', async (req, res) => {
   try {
-    console.log('Received junkyard data:', req.body);
     const junkyard = new JunkyardModel(req.body);
     const savedJunkyard = await junkyard.save();
-    console.log('Successfully saved junkyard:', savedJunkyard);
     res.status(201).json(savedJunkyard);
   } catch (error) {
     console.error('Error creating junkyard:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });
-    }
     res.status(400).json({ 
       message: 'Error creating junkyard', 
       error: error instanceof Error ? error.message : 'Unknown error'
