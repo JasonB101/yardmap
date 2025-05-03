@@ -4,7 +4,7 @@
   "description": "A map application for self-service junkyards",
   "main": "server/index.ts",
   "scripts": {
-    "start": "node dist/server/index.js",
+    "start": "cd server && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon --watch server --exec ts-node server/index.ts",
     "client": "cd client; npm start",
