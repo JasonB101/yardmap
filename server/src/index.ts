@@ -41,7 +41,13 @@ app.use(errorHandler);
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/junkyard-map';
 console.log('Attempting to connect to MongoDB at:', MONGODB_URI);
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+  family: 4,
+  retryWrites: true,
+  w: 'majority'
+})
   .then(() => {
     console.log('Connected to MongoDB successfully');
     // Start the server only after MongoDB is connected
@@ -57,7 +63,9 @@ mongoose.connect(MONGODB_URI)
       name: error.name,
       message: error.message,
       code: error.code,
-      codeName: error.codeName
+      codeName: error.codeName,
+      topology: error.reason?.type,
+      servers: error.reason?.servers ? Array.from(error.reason.servers.keys()) : []
     });
     process.exit(1); // Exit the process if MongoDB connection fails
   }); 
