@@ -9,7 +9,7 @@ import JunkyardInfo from './components/JunkyardInfo';
 import { IJunkyard } from './types/junkyard';
 import axios from 'axios';
 import RouteIcon from '@mui/icons-material/Route';
-import MapIcon from '@mui/icons-material/Map';
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 // Create a theme instance
 const theme = createTheme();
@@ -245,9 +245,12 @@ function App() {
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div>
-          <AppBar position="static">
+          <AppBar position="static" sx={{ 
+            backgroundColor: '#BCAAA4',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
             <Toolbar>
-              <MapIcon sx={{ mr: 1 }} />
+              <PushPinIcon sx={{ mr: 1, fontSize: 28 }} />
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 Yard Map
               </Typography>
