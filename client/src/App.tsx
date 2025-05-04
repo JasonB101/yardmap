@@ -286,9 +286,24 @@ function App() {
 
   const handleAddJunkyard = async (newJunkyard: Partial<IJunkyard>) => {
     try {
-      await api.post('/junkyards', newJunkyard);
-      fetchJunkyards();
+      const response = await api.post('/junkyards', newJunkyard);
+      const addedJunkyard = response.data;
+      setJunkyards(prev => [...prev, addedJunkyard]);
+      setFilteredJunkyards(prev => [...prev, addedJunkyard]);
       setIsFormOpen(false);
+      
+      // Center and zoom the map to the new junkyard
+      if (mapRef.current && addedJunkyard.location) {
+        // First set the zoom level
+        mapRef.current.setZoom(15); // Zoom in closer to see the exact location
+        // Then pan to the location
+        mapRef.current.panTo(addedJunkyard.location);
+        // Update the map state ref
+        mapStateRef.current = {
+          center: addedJunkyard.location,
+          zoom: 15
+        };
+      }
     } catch (error) {
       console.error('Error adding junkyard:', error);
       setError('Failed to add junkyard. Please try again.');
