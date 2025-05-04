@@ -12,6 +12,8 @@ import axios from 'axios';
 import RouteIcon from '@mui/icons-material/Route';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import { appTheme } from './theme';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // Create a theme instance
 const theme = createTheme({
@@ -78,6 +80,8 @@ function App() {
   const [selectedJunkyard, setSelectedJunkyard] = useState<IJunkyard | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
@@ -270,30 +274,80 @@ function App() {
 
   const handleMarkerClick = (junkyard: IJunkyard) => {
     console.log('Marker clicked:', junkyard);
-    setSelectedJunkyard(junkyard);
     
-    // Center and zoom the map to the clicked junkyard
-    if (mapRef.current && junkyard.location) {
-      // First set the zoom level
-      mapRef.current.setZoom(18); // Zoom in very close to see the exact location
+    if (isCalculatingDistance) {
+      // If in distance calculation mode, calculate distance between selected junkyard and clicked location
+      if (selectedJunkyard && junkyard.location) {
+        const startLocation = selectedJunkyard.location;
+        const endLocation = junkyard.location;
+
+        try {
+          // Clear existing route
+          clearRoute();
+
+          const directionsService = new google.maps.DirectionsService();
+          directionsService.route({
+            origin: { lat: startLocation.lat, lng: startLocation.lng },
+            destination: { lat: endLocation.lat, lng: endLocation.lng },
+            travelMode: google.maps.TravelMode.DRIVING,
+          }, (result, status) => {
+            if (status === 'OK' && result) {
+              const renderer = new google.maps.DirectionsRenderer({
+                map: mapRef.current,
+                directions: result
+              });
+              setDirectionsRenderer(renderer);
+              setDirections(result);
+
+              const route = result.routes[0];
+              if (route && route.legs[0]) {
+                setDistanceInfo({
+                  distance: route.legs[0].distance?.text || 'Unknown',
+                  duration: route.legs[0].duration?.text || 'Unknown',
+                });
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error calculating route:', error);
+          setError('Failed to calculate route. Please try again.');
+        } finally {
+          setIsCalculatingDistance(false);
+          // Reset cursor to default
+          if (mapRef.current) {
+            mapRef.current.setOptions({ draggableCursor: null });
+          }
+        }
+      }
+    } else {
+      // Normal marker click behavior
+      setSelectedJunkyard(junkyard);
       
-      // Calculate offset center point to account for marker position
-      const offsetLat = junkyard.location.lat - 0.0002; // Move down
-      const offsetLng = junkyard.location.lng + 0.00035; // Move right
-      
-      // Then pan to the offset location
-      mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
-      
-      // Update the map state ref
-      mapStateRef.current = {
-        center: { lat: offsetLat, lng: offsetLng },
-        zoom: 18
-      };
+      // Center and zoom the map to the clicked junkyard
+      if (mapRef.current && junkyard.location) {
+        // First set the zoom level
+        mapRef.current.setZoom(18); // Zoom in very close to see the exact location
+        
+        // Calculate offset center point to account for marker position
+        const offsetLat = junkyard.location.lat - 0.0002; // Move down
+        const offsetLng = junkyard.location.lng + 0.00035; // Move right
+        
+        // Then pan to the offset location
+        mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
+        
+        // Update the map state ref
+        mapStateRef.current = {
+          center: { lat: offsetLat, lng: offsetLng },
+          zoom: 18
+        };
+      }
     }
   };
 
   const handleInfoWindowClose = () => {
     setSelectedJunkyard(null);
+    // Clear any displayed routes
+    clearRoute();
     // Force close any remaining InfoWindows
     const infoWindows = document.querySelectorAll('.gm-style-iw');
     infoWindows.forEach(window => {
@@ -500,7 +554,7 @@ function App() {
                         bottom: LAYOUT.INFO_OFFSET.BOTTOM,
                         left: LAYOUT.INFO_OFFSET.LEFT,
                         width: '300px',
-                        background: '#3D3D3D',
+                        background: '#2D2D2D',
                         border: 'none',
                         borderRadius: '8px',
                         padding: '12px',
@@ -512,6 +566,7 @@ function App() {
                           setSelectedJunkyard(null);
                           setDirections(null);
                           setDistanceInfo(null);
+                          clearRoute();
                         }}
                         sx={{
                           position: 'absolute',
@@ -521,7 +576,7 @@ function App() {
                           height: '32px',
                           padding: '4px',
                           fontSize: '20px',
-                          color: 'text.secondary',
+                          color: 'white',
                           '&:hover': {
                             backgroundColor: 'rgba(0, 0, 0, 0.04)'
                           }

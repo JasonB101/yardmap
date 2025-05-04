@@ -120,12 +120,13 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
   return (
     <Box sx={{ 
-      p: 2, 
-      pb: 1,
+      p: 1, 
+      pb: 0.5,
       minWidth:25, 
       maxWidth: 325, 
-      backgroundColor: '#3D3D3D',
-      borderRadius: 1,
+      backgroundColor: 'transparent',
+      borderRadius: 0,
+      position: 'relative',
       '& > *': {
         border: 'none',
         mb: 1
@@ -142,13 +143,18 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         mb: 1, 
         fontWeight: 'bold',
         color: 'white',
-        textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+        textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        fontSize: '1.25rem'
       }}>
         {junkyard.name}
       </Typography>
 
       <Box sx={{ mb: 1 }}>
-        <Typography variant="body2" sx={{ color: 'white' }}>
+        <Typography variant="body2" sx={{ 
+          color: '#E0E0E0',
+          lineHeight: 1.5,
+          fontSize: '0.9rem'
+        }}>
           {junkyard.address}
           <br />
           {junkyard.city}, {junkyard.state} {junkyard.zipCode}
@@ -157,12 +163,26 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       <Box sx={{ mb: 1 }}>
         {junkyard.phone && (
-          <Typography variant="body2" sx={{ color: 'white' }}>
+          <Typography variant="body2" sx={{ 
+            color: '#E0E0E0',
+            fontSize: '0.9rem',
+            '& strong': {
+              color: '#B0B0B0',
+              fontWeight: 500
+            }
+          }}>
             <strong>Phone:</strong> {formatPhone(junkyard.phone)}
           </Typography>
         )}
         {junkyard.email && (
-          <Typography variant="body2" sx={{ color: 'white' }}>
+          <Typography variant="body2" sx={{ 
+            color: '#E0E0E0',
+            fontSize: '0.9rem',
+            '& strong': {
+              color: '#B0B0B0',
+              fontWeight: 500
+            }
+          }}>
             <strong>Email:</strong> {junkyard.email}
           </Typography>
         )}
@@ -170,7 +190,14 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       {junkyard.estimatedSize > 0 && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="body2" sx={{ color: 'white' }}>
+          <Typography variant="body2" sx={{ 
+            color: '#E0E0E0',
+            fontSize: '0.9rem',
+            '& strong': {
+              color: '#B0B0B0',
+              fontWeight: 500
+            }
+          }}>
             <strong>Estimated Size:</strong> {junkyard.estimatedSize.toLocaleString()} vehicles
           </Typography>
         </Box>
@@ -179,8 +206,15 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
       {junkyard.costRating && (
         <Box sx={{ mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ color: 'white' }}>Cost Rating:</Typography>
-            <Typography variant="body2" sx={{ color: 'white' }}>
+            <Typography variant="body2" sx={{ 
+              color: '#B0B0B0',
+              fontWeight: 500,
+              fontSize: '0.9rem'
+            }}>Cost Rating:</Typography>
+            <Typography variant="body2" sx={{ 
+              color: '#E0E0E0',
+              fontSize: '0.9rem'
+            }}>
               {Array(parseInt(junkyard.costRating)).fill('$').join('')}
             </Typography>
           </Box>
@@ -189,7 +223,11 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
       {junkyard.description && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="body2" sx={{ color: 'white' }}>
+          <Typography variant="body2" sx={{ 
+            color: '#E0E0E0',
+            fontSize: '0.9rem',
+            lineHeight: 1.5
+          }}>
             {junkyard.description}
           </Typography>
         </Box>
@@ -199,8 +237,10 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         <Typography variant="subtitle2" sx={{ 
           fontWeight: 'bold', 
           mb: 0.5,
-          color: 'white',
-          textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+          color: '#B0B0B0',
+          fontSize: '0.85rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px'
         }}>
           Business Hours
         </Typography>
@@ -212,18 +252,33 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         }}>
           {getGroupedHours().map((group, index) => (
             <React.Fragment key={index}>
-              <Typography variant="body2" sx={{ color: 'white' }}>
+              <Typography variant="body2" sx={{ 
+                color: '#B0B0B0',
+                fontSize: '0.85rem',
+                fontWeight: 500
+              }}>
                 {group.days.length > 1 
                   ? `${group.days[0]} - ${group.days[group.days.length - 1]}`
                   : group.days[0]}:
               </Typography>
-              <Typography variant="body2" sx={{ color: 'white' }}>
+              <Typography variant="body2" sx={{ 
+                color: '#E0E0E0',
+                fontSize: '0.85rem'
+              }}>
                 {formatHours(group.hours)}
               </Typography>
             </React.Fragment>
           ))}
         </Box>
       </Box>
+
+      <Box sx={{ 
+        height: '1px', 
+        backgroundColor: '#4A4A4A', 
+        my: 1.5,
+        width: '100%',
+        opacity: 0
+      }} />
 
       <Box sx={{ 
         display: 'flex', 
@@ -239,7 +294,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
           width: '250px'
         },
         '& .action-button': {
-          mt: 2
+          mt: 0.5
         }
       }}>
         {junkyard.inventoryLink && (
@@ -249,6 +304,13 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             href={junkyard.inventoryLink}
             target="_blank"
             rel="noopener noreferrer"
+            sx={{
+              backgroundColor: '#FFFFFF',
+              color: '#252525',
+              '&:hover': {
+                backgroundColor: '#F5F5F5'
+              }
+            }}
           >
             View Inventory
           </Button>
@@ -260,6 +322,14 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             href={junkyard.priceListLink}
             target="_blank"
             rel="noopener noreferrer"
+            sx={{
+              borderColor: '#4A4A4A',
+              color: '#E0E0E0',
+              '&:hover': {
+                borderColor: '#5A5A5A',
+                backgroundColor: 'rgba(255,255,255,0.05)'
+              }
+            }}
           >
             View Price List
           </Button>
@@ -271,6 +341,14 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             href={junkyard.website}
             target="_blank"
             rel="noopener noreferrer"
+            sx={{
+              borderColor: '#4A4A4A',
+              color: '#E0E0E0',
+              '&:hover': {
+                borderColor: '#5A5A5A',
+                backgroundColor: 'rgba(255,255,255,0.05)'
+              }
+            }}
           >
             Visit Website
           </Button>
@@ -278,25 +356,102 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
         <Button
           variant="outlined"
           color="info"
-          startIcon={<RouteIcon />}
+          startIcon={<RouteIcon sx={{ color: '#1976d2' }} />}
           onClick={onCalculateDistance}
           size="small"
-          sx={{ width: '250px' }}
+          sx={{ 
+            width: '250px',
+            borderColor: '#4A4A4A',
+            color: '#E0E0E0',
+            '&:hover': {
+              borderColor: '#5A5A5A',
+              backgroundColor: 'rgba(255,255,255,0.05)'
+            }
+          }}
         >
           Calculate Distance
         </Button>
         {distanceInfo && (
           <Box 
             sx={{ 
-              p: 2, 
-              bgcolor: 'background.paper', 
-              borderRadius: 1,
+              p: 0.75, 
+              pb: 0,
+              bgcolor: '#252525', 
+              borderRadius: 0,
               position: 'relative',
-              mt: 1,
+              mt: 0.5,
               width: '250px',
-              alignSelf: 'center'
+              alignSelf: 'center',
+              mb: 0,
+              '& .MuiBox-root': {
+                mb: 0
+              },
+              '& > *': {
+                mb: 0
+              },
+              '& > *:last-child': {
+                mb: 0
+              }
             }}
           >
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                fontWeight: 'bold', 
+                mb: 0,
+                color: '#E0E0E0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                pr: 4,
+                fontSize: '0.85rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              <RouteIcon fontSize="small" />
+              Route Information
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0, mb: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0 }}>
+                <Typography variant="body2" sx={{ 
+                  color: '#B0B0B0', 
+                  minWidth: '80px', 
+                  mb: 0,
+                  fontSize: '0.85rem',
+                  fontWeight: 500
+                }}>
+                  Distance:
+                </Typography>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 'medium', 
+                  color: '#E0E0E0', 
+                  mb: 0,
+                  fontSize: '0.85rem'
+                }}>
+                  {distanceInfo.distance}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0 }}>
+                <Typography variant="body2" sx={{ 
+                  color: '#B0B0B0', 
+                  minWidth: '80px', 
+                  mb: 0,
+                  fontSize: '0.85rem',
+                  fontWeight: 500
+                }}>
+                  Duration:
+                </Typography>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 'medium', 
+                  color: '#E0E0E0', 
+                  mb: 0,
+                  fontSize: '0.85rem'
+                }}>
+                  {distanceInfo.duration}
+                </Typography>
+              </Box>
+            </Box>
             <Button
               className="close-button"
               onClick={() => {
@@ -306,61 +461,28 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
               }}
               sx={{
                 position: 'absolute',
-                top: 0,
-                right: 0,
+                top: 4,
+                right: 4,
                 minWidth: '32px',
                 height: '32px',
                 padding: 0,
                 fontSize: '20px',
-                color: 'text.secondary',
+                color: '#B0B0B0',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  backgroundColor: 'rgba(255,255,255,0.05)'
                 }
               }}
             >
               ×
             </Button>
-            <Typography 
-              variant="subtitle2" 
-              sx={{ 
-                fontWeight: 'bold', 
-                mb: 1,
-                color: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                pr: 4
-              }}
-            >
-              <RouteIcon fontSize="small" />
-              Route Information
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: '80px' }}>
-                  Distance:
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium', color: 'white' }}>
-                  {distanceInfo.distance}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: '80px' }}>
-                  Duration:
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium', color: 'white' }}>
-                  {distanceInfo.duration}
-                </Typography>
-              </Box>
-            </Box>
           </Box>
         )}
         <Box sx={{ 
           display: 'flex', 
-          gap: 1, 
-          mt: 0.5,
+          gap: 0.5, 
           justifyContent: 'center',
-          width: '100%'
+          width: '100%',
+          mt: 0.5
         }}>
           <Button
             variant="outlined"
@@ -369,18 +491,36 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             onClick={() => setEditDialogOpen(true)}
             size="small"
             className="action-button"
-            sx={{ width: '120px', py: 0.5 }}
+            sx={{ 
+              width: '120px', 
+              py: 0.25,
+              borderColor: '#4A4A4A',
+              color: '#E0E0E0',
+              '&:hover': {
+                borderColor: '#5A5A5A',
+                backgroundColor: 'rgba(255,255,255,0.05)'
+              }
+            }}
           >
             Edit
           </Button>
           <Button
             variant="outlined"
             color="error"
-            startIcon={<DeleteIcon />}
+            startIcon={<DeleteIcon sx={{ color: '#d32f2f' }} />}
             onClick={() => setDeleteDialogOpen(true)}
             size="small"
             className="action-button"
-            sx={{ width: '120px', py: 0.5 }}
+            sx={{ 
+              width: '120px', 
+              py: 0.25,
+              borderColor: '#4A4A4A',
+              color: '#E0E0E0',
+              '&:hover': {
+                borderColor: '#5A5A5A',
+                backgroundColor: 'rgba(255,255,255,0.05)'
+              }
+            }}
           >
             Delete
           </Button>
