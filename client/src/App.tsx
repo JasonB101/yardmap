@@ -103,7 +103,7 @@ function App() {
         </svg>
       `),
       scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size/2 - 2, size/2 - 4),
+      anchor: new google.maps.Point(size/2, size), // Anchor at bottom center
     };
   }, []);
 
