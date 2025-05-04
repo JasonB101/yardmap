@@ -271,6 +271,25 @@ function App() {
   const handleMarkerClick = (junkyard: IJunkyard) => {
     console.log('Marker clicked:', junkyard);
     setSelectedJunkyard(junkyard);
+    
+    // Center and zoom the map to the clicked junkyard
+    if (mapRef.current && junkyard.location) {
+      // First set the zoom level
+      mapRef.current.setZoom(18); // Zoom in very close to see the exact location
+      
+      // Calculate offset center point to account for marker position
+      const offsetLat = junkyard.location.lat - 0.0002; // Move down
+      const offsetLng = junkyard.location.lng + 0.00035; // Move right
+      
+      // Then pan to the offset location
+      mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
+      
+      // Update the map state ref
+      mapStateRef.current = {
+        center: { lat: offsetLat, lng: offsetLng },
+        zoom: 18
+      };
+    }
   };
 
   const handleInfoWindowClose = () => {
