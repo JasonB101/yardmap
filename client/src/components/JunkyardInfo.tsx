@@ -340,7 +340,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
                 <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: '80px' }}>
                   Distance:
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium', color: 'white' }}>
                   {distanceInfo.distance}
                 </Typography>
               </Box>
@@ -348,7 +348,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
                 <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: '80px' }}>
                   Duration:
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium', color: 'white' }}>
                   {distanceInfo.duration}
                 </Typography>
               </Box>
