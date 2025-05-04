@@ -57,8 +57,8 @@ const mapContainerStyle = {
 };
 
 const center = {
-  lat: 39.8283,  // Center of USA
-  lng: -98.5795
+  lat: 35.0000,  // Moved slightly south
+  lng: -90.0000  // Moved slightly east
 };
 
 // Add this constant at the top of the file, after the imports
@@ -88,7 +88,7 @@ function App() {
   const mapRef = useRef<google.maps.Map | null>(null);
   const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
   const mapStateRef = useRef({
-    center: { lat: 39.8283, lng: -98.5795 },
+    center: { lat: 35.0000, lng: -90.0000 },
     zoom: 4
   });
 
@@ -103,7 +103,7 @@ function App() {
         </svg>
       `),
       scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size/2, size),
+      anchor: new google.maps.Point(size/2 - 2, size/2 - 4),
     };
   }, []);
 
@@ -295,13 +295,19 @@ function App() {
       // Center and zoom the map to the new junkyard
       if (mapRef.current && addedJunkyard.location) {
         // First set the zoom level
-        mapRef.current.setZoom(15); // Zoom in closer to see the exact location
-        // Then pan to the location
-        mapRef.current.panTo(addedJunkyard.location);
+        mapRef.current.setZoom(18); // Zoom in very close to see the exact location
+        
+        // Calculate offset center point to account for marker position
+        const offsetLat = addedJunkyard.location.lat - 0.0002; // Move down
+        const offsetLng = addedJunkyard.location.lng + 0.00035; // Move right (even more)
+        
+        // Then pan to the offset location
+        mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
+        
         // Update the map state ref
         mapStateRef.current = {
-          center: addedJunkyard.location,
-          zoom: 15
+          center: { lat: offsetLat, lng: offsetLng },
+          zoom: 18
         };
       }
     } catch (error) {
