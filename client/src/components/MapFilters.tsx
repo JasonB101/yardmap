@@ -223,106 +223,88 @@ const MapFilters: React.FC<MapFiltersProps> = ({ onFilterChange }) => {
               >
                 Features
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={hasInventory}
-                      onChange={handleInventoryChange}
-                      sx={{
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                <ToggleButtonGroup
+                  value={hasInventory ? 'inventory' : ''}
+                  exclusive
+                  onChange={(_, newValue) => handleInventoryChange({ target: { checked: newValue === 'inventory' } } as any)}
+                  size="small"
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      color: 'white',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      px: 1.5,
+                      py: 0.5,
+                      '&.Mui-selected': {
+                        backgroundColor: '#5D5D5D',
                         color: 'white',
-                        '&.Mui-checked': {
-                          color: 'white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                          borderRadius: '4px',
-                        },
+                        borderColor: 'white',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          backgroundColor: '#6D6D6D',
                         }
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography 
-                      color="white" 
-                      variant="body2"
-                      sx={{ 
-                        fontWeight: hasInventory ? 600 : 500,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                        color: hasInventory ? 'white' : 'rgba(255, 255, 255, 0.8)'
-                      }}
-                    >
-                      Has Online Inventory
-                    </Typography>
-                  }
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={openWeekends}
-                      onChange={handleWeekendChange}
-                      sx={{
+                      },
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      }
+                    }
+                  }}
+                >
+                  <ToggleButton value="inventory">Has Online Inventory</ToggleButton>
+                </ToggleButtonGroup>
+                <ToggleButtonGroup
+                  value={hasPriceList ? 'priceList' : ''}
+                  exclusive
+                  onChange={(_, newValue) => handlePriceListChange({ target: { checked: newValue === 'priceList' } } as any)}
+                  size="small"
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      color: 'white',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      px: 1.5,
+                      py: 0.5,
+                      '&.Mui-selected': {
+                        backgroundColor: '#5D5D5D',
                         color: 'white',
-                        '&.Mui-checked': {
-                          color: 'white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                          borderRadius: '4px',
-                        },
+                        borderColor: 'white',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          backgroundColor: '#6D6D6D',
                         }
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography 
-                      color="white" 
-                      variant="body2"
-                      sx={{ 
-                        fontWeight: openWeekends ? 600 : 500,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                        color: openWeekends ? 'white' : 'rgba(255, 255, 255, 0.8)'
-                      }}
-                    >
-                      Open Weekends
-                    </Typography>
-                  }
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={hasPriceList}
-                      onChange={handlePriceListChange}
-                      sx={{
+                      },
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      }
+                    }
+                  }}
+                >
+                  <ToggleButton value="priceList">Has Price List</ToggleButton>
+                </ToggleButtonGroup>
+                <ToggleButtonGroup
+                  value={openWeekends ? 'weekends' : ''}
+                  exclusive
+                  onChange={(_, newValue) => handleWeekendChange({ target: { checked: newValue === 'weekends' } } as any)}
+                  size="small"
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      color: 'white',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      px: 1.5,
+                      py: 0.5,
+                      '&.Mui-selected': {
+                        backgroundColor: '#5D5D5D',
                         color: 'white',
-                        '&.Mui-checked': {
-                          color: 'white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                          borderRadius: '4px',
-                        },
+                        borderColor: 'white',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          backgroundColor: '#6D6D6D',
                         }
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography 
-                      color="white" 
-                      variant="body2"
-                      sx={{ 
-                        fontWeight: hasPriceList ? 600 : 500,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                        color: hasPriceList ? 'white' : 'rgba(255, 255, 255, 0.8)'
-                      }}
-                    >
-                      Has Price List
-                    </Typography>
-                  }
-                />
+                      },
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      }
+                    }
+                  }}
+                >
+                  <ToggleButton value="weekends">Open Weekends</ToggleButton>
+                </ToggleButtonGroup>
               </Box>
             </Box>
           </Box>
