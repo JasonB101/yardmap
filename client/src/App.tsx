@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { GoogleMap, LoadScript, Marker, OverlayView, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, OverlayView, InfoWindow, DirectionsRenderer, useLoadScript } from '@react-google-maps/api';
 import { Container, Typography, AppBar, Toolbar, Button, Box, Alert, Snackbar } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -75,6 +75,10 @@ const mapStyles = [
 ];
 
 function App() {
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
   const [junkyards, setJunkyards] = useState<IJunkyard[]>([]);
   const [filteredJunkyards, setFilteredJunkyards] = useState<IJunkyard[]>([]);
   const [selectedJunkyard, setSelectedJunkyard] = useState<IJunkyard | null>(null);
@@ -95,21 +99,7 @@ function App() {
     center: { lat: 35.0000, lng: -90.0000 },
     zoom: 4
   });
-
-  const getMarkerIcon = useCallback(() => {
-    if (!google) return undefined;
-    const size = 25; // Increased size to 25px
-    return {
-      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-        <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF0000"/>
-          <circle cx="12" cy="9" r="2.5" fill="white"/>
-        </svg>
-      `),
-      scaledSize: new google.maps.Size(size, size),
-      anchor: new google.maps.Point(size/2, size), // Anchor at bottom center
-    };
-  }, []);
+  const [markerIcon, setMarkerIcon] = useState<google.maps.Symbol | google.maps.Icon | undefined>(undefined);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -429,6 +419,22 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (isLoaded && window.google) {
+      const size = 25; // Increased size to 25px
+      setMarkerIcon({
+        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF0000"/>
+            <circle cx="12" cy="9" r="2.5" fill="white"/>
+          </svg>
+        `),
+        scaledSize: new window.google.maps.Size(size, size),
+        anchor: new window.google.maps.Point(size/2, size), // Anchor at bottom center
+      } as google.maps.Icon);
+    }
+  }, [isLoaded]);
+
   const MapMarkers = useMemo(() => {
     return (
       <>
@@ -437,12 +443,13 @@ function App() {
             key={junkyard._id}
             position={junkyard.location}
             onClick={() => handleMarkerClick(junkyard)}
-            icon={getMarkerIcon()}
+            icon={markerIcon}
+            title={junkyard.name}
           />
         ))}
       </>
     );
-  }, [filteredJunkyards, handleMarkerClick, getMarkerIcon]);
+  }, [filteredJunkyards, handleMarkerClick, markerIcon]);
 
   const MapContent = useMemo(() => {
     return (
@@ -469,12 +476,21 @@ function App() {
     );
   }, [onMapLoad, onMapUnmount, handleMapClick, onMapIdle, MapMarkers]);
 
-  // Add this check after all hooks
-  if (!GOOGLE_MAPS_API_KEY) {
+  if (loadError) {
     return (
       <Container>
         <Typography color="error" variant="h6" sx={{ mt: 4 }}>
-          Error: Google Maps API key is not configured
+          Error loading Google Maps
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <Container>
+        <Typography variant="h6" sx={{ mt: 4 }}>
+          Loading...
         </Typography>
       </Container>
     );
@@ -562,9 +578,7 @@ function App() {
                   overflow: 'hidden',
                   flex: 1
                 }}>
-                  <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-                    {MapContent}
-                  </LoadScript>
+                  {MapContent}
 
                   {selectedJunkyard && (
                     <Box
