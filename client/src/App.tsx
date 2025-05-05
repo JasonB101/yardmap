@@ -100,6 +100,7 @@ function App() {
     zoom: 4
   });
   const [markerIcon, setMarkerIcon] = useState<google.maps.Symbol | google.maps.Icon | undefined>(undefined);
+  const [currentZoom, setCurrentZoom] = useState<number>(4);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -108,6 +109,7 @@ function App() {
     const zoom = map.getZoom();
     if (center && zoom) {
       mapStateRef.current = { center, zoom };
+      setCurrentZoom(zoom);
     }
   }, []);
 
@@ -116,14 +118,15 @@ function App() {
   }, []);
 
   const onMapIdle = useCallback(() => {
-    if (mapRef.current && !isCalculatingDistance) {
+    if (mapRef.current) {
       const center = mapRef.current.getCenter()?.toJSON();
       const zoom = mapRef.current.getZoom();
       if (center && zoom) {
         mapStateRef.current = { center, zoom };
+        setCurrentZoom(zoom);
       }
     }
-  }, [isCalculatingDistance]);
+  }, []);
 
   const clearRoute = useCallback(() => {
     if (directionsRenderer) {
@@ -197,6 +200,7 @@ function App() {
       
       mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
       mapRef.current.setZoom(11);
+      setCurrentZoom(11);
       mapRef.current.setOptions({ draggableCursor: 'crosshair' });
     }
   }, [selectedJunkyard]);
@@ -421,19 +425,34 @@ function App() {
 
   useEffect(() => {
     if (isLoaded && window.google) {
-      const size = 25; // Increased size to 25px
-      setMarkerIcon({
-        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF0000"/>
-            <circle cx="12" cy="9" r="2.5" fill="white"/>
-          </svg>
-        `),
-        scaledSize: new window.google.maps.Size(size, size),
-        anchor: new window.google.maps.Point(size/2, size), // Anchor at bottom center
-      } as google.maps.Icon);
+      const size = currentZoom <= 6 ? 8 : 25; // Smaller size for zoomed out view
+      const isZoomedOut = currentZoom <= 6;
+      
+      if (isZoomedOut) {
+        // Simple red dot for zoomed out view
+        setMarkerIcon({
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 3,
+          fillColor: '#FF0000',
+          fillOpacity: 1,
+          strokeColor: '#FFFFFF',
+          strokeWeight: 1,
+        } as google.maps.Symbol);
+      } else {
+        // Original marker design for zoomed in view
+        setMarkerIcon({
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+            <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#FF0000"/>
+              <circle cx="12" cy="9" r="2.5" fill="white"/>
+            </svg>
+          `),
+          scaledSize: new window.google.maps.Size(size, size),
+          anchor: new window.google.maps.Point(size/2, size),
+        } as google.maps.Icon);
+      }
     }
-  }, [isLoaded]);
+  }, [isLoaded, currentZoom]);
 
   const MapMarkers = useMemo(() => {
     return (
@@ -468,13 +487,25 @@ function App() {
           streetViewControl: true,
           mapTypeControl: true,
           fullscreenControl: true,
-          gestureHandling: 'greedy'
+          gestureHandling: 'greedy',
+          mapTypeId: 'hybrid'
         }}
       >
         {MapMarkers}
       </GoogleMap>
     );
   }, [onMapLoad, onMapUnmount, handleMapClick, onMapIdle, MapMarkers]);
+
+  useEffect(() => {
+    if (isLoaded && mapRef.current) {
+      mapRef.current.setOptions({
+        mapTypeControlOptions: {
+          mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain'],
+          position: google.maps.ControlPosition.TOP_RIGHT
+        }
+      });
+    }
+  }, [isLoaded]);
 
   if (loadError) {
     return (

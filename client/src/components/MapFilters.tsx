@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, TextField, Typography, Paper, ToggleButton, ToggleButtonGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, TextField, Typography, Paper, ToggleButton, ToggleButtonGroup, FormControlLabel, Checkbox, IconButton } from '@mui/material';
 import { appTheme } from '../theme';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface MapFiltersProps {
   onFilterChange: (filters: { 
@@ -57,6 +58,11 @@ const MapFilters: React.FC<MapFiltersProps> = ({ onFilterChange }) => {
     const checked = event.target.checked;
     setHasPriceList(checked);
     onFilterChange({ costRating, keyword, size, hasInventory, openWeekends, hasPriceList: checked });
+  };
+
+  const handleClearKeyword = () => {
+    setKeyword('');
+    onFilterChange({ costRating, keyword: '', size, hasInventory, openWeekends, hasPriceList });
   };
 
   return (
@@ -181,6 +187,22 @@ const MapFilters: React.FC<MapFiltersProps> = ({ onFilterChange }) => {
                 variant="outlined"
                 value={keyword}
                 onChange={handleKeywordChange}
+                InputProps={{
+                  endAdornment: keyword && (
+                    <IconButton
+                      size="small"
+                      onClick={handleClearKeyword}
+                      sx={{
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        '&:hover': {
+                          color: 'white',
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  ),
+                }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: '#2D2D2D',
