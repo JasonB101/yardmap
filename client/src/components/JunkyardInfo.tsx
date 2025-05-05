@@ -376,7 +376,7 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
             sx={{ 
               p: 0.75, 
               pb: 0,
-              bgcolor: '#252525', 
+              bgcolor: '#2D2D2D', 
               borderRadius: 0,
               position: 'relative',
               mt: 0.5,

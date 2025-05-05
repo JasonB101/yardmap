@@ -126,14 +126,14 @@ function App() {
   }, []);
 
   const onMapIdle = useCallback(() => {
-    if (mapRef.current) {
+    if (mapRef.current && !isCalculatingDistance) {
       const center = mapRef.current.getCenter()?.toJSON();
       const zoom = mapRef.current.getZoom();
       if (center && zoom) {
         mapStateRef.current = { center, zoom };
       }
     }
-  }, []);
+  }, [isCalculatingDistance]);
 
   const clearRoute = useCallback(() => {
     if (directionsRenderer) {
@@ -192,15 +192,24 @@ function App() {
   }, [isCalculatingDistance, selectedJunkyard, clearRoute]);
 
   const handleCalculateDistance = useCallback(() => {
+    if (!selectedJunkyard?.location) return;
+    
     setIsCalculatingDistance(true);
     setDirections(null);
     setDistanceInfo(null);
     setError('Click on the map to select your starting point');
-    // Add crosshair cursor to the map
+    
+    // Center on selected junkyard and set zoom level to show an entire city
     if (mapRef.current) {
+      // Calculate offset center point to account for marker position
+      const offsetLat = selectedJunkyard.location.lat - 0.0002; // Move down
+      const offsetLng = selectedJunkyard.location.lng + 0.00035; // Move right
+      
+      mapRef.current.panTo({ lat: offsetLat, lng: offsetLng });
+      mapRef.current.setZoom(11);
       mapRef.current.setOptions({ draggableCursor: 'crosshair' });
     }
-  }, []);
+  }, [selectedJunkyard]);
 
   const handleUpdateJunkyard = useCallback(async (updatedJunkyard: IJunkyard) => {
     try {
@@ -321,6 +330,16 @@ function App() {
       }
     } else {
       // Normal marker click behavior
+      // First clear any existing state
+      if (directionsRenderer) {
+        directionsRenderer.setMap(null);
+        setDirectionsRenderer(null);
+      }
+      setDirections(null);
+      setDistanceInfo(null);
+      setIsCalculatingDistance(false);
+      
+      // Then set the new selected junkyard
       setSelectedJunkyard(junkyard);
       
       // Center and zoom the map to the clicked junkyard
@@ -566,17 +585,20 @@ function App() {
                           setSelectedJunkyard(null);
                           setDirections(null);
                           setDistanceInfo(null);
+                          setIsCalculatingDistance(false);
                           clearRoute();
                         }}
                         sx={{
                           position: 'absolute',
-                          top: 0,
-                          right: 0,
+                          top: 4,
+                          right: 4,
                           minWidth: '32px',
                           height: '32px',
-                          padding: '4px',
+                          padding: 0,
                           fontSize: '20px',
                           color: 'white',
+                          zIndex: 1001,
+                          pointerEvents: 'auto',
                           '&:hover': {
                             backgroundColor: 'rgba(0, 0, 0, 0.04)'
                           }
@@ -590,6 +612,7 @@ function App() {
                           setSelectedJunkyard(null);
                           setDirections(null);
                           setDistanceInfo(null);
+                          setIsCalculatingDistance(false);
                         }}
                         onDelete={() => handleDeleteJunkyard(selectedJunkyard._id)}
                         onUpdate={handleUpdateJunkyard}
