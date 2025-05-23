@@ -55,7 +55,11 @@ const JunkyardInfo: React.FC<JunkyardInfoProps> = ({
 
   const handleUpdate = async (updatedJunkyard: Partial<IJunkyard>) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/junkyards/${junkyard._id}`, updatedJunkyard);
+      const apiUrl = process.env.NODE_ENV === 'production'
+        ? `/api/junkyards/${junkyard._id}`
+        : `${window.location.protocol}//${window.location.hostname}:5000/api/junkyards/${junkyard._id}`;
+      
+      const response = await axios.put(apiUrl, updatedJunkyard);
       onUpdate?.(response.data);
       setEditDialogOpen(false);
     } catch (error) {

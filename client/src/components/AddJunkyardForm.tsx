@@ -219,25 +219,63 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
 
   const geocodeAddress = async () => {
     try {
+      // Validate address fields first
+      if (!formData.address || !formData.city || !formData.state) {
+        throw new Error('Please provide a complete address (street, city, and state are required)');
+      }
+      
+      setIsGeocoding(true);
+      setGeocodingError(null);
+      
       const apiUrl = process.env.NODE_ENV === 'production'
         ? '/api/junkyards/geocode'
         : `${window.location.protocol}//${window.location.hostname}:5000/api/junkyards/geocode`;
 
+      console.log(`Geocoding address: ${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}`);
+      
       const response = await axios.post(apiUrl, {
         address: formData.address,
         city: formData.city,
         state: formData.state,
         zipCode: formData.zipCode
       });
+      
+      if (!response.data || !response.data.lat || !response.data.lng) {
+        throw new Error('Invalid response from geocoding service');
+      }
+      
       const { lat, lng } = response.data;
+      console.log(`Successfully geocoded to: ${lat}, ${lng}`);
+      
       setFormData(prev => ({
         ...prev,
         location: { lat, lng }
       }));
+      
       return { lat, lng };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Geocoding error:', error);
-      throw new Error('Failed to geocode address');
+      
+      // Extract the most helpful error message
+      let errorMessage = 'Failed to geocode address';
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        errorMessage = error.response.data?.message || error.response.data?.error || errorMessage;
+        console.error('Server response error:', error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = 'No response from geocoding service. Please check your internet connection.';
+      } else if (error.message) {
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = error.message;
+      }
+      
+      setGeocodingError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsGeocoding(false);
     }
   };
 
@@ -245,14 +283,34 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
     e.preventDefault();
     
     try {
+      setIsGeocoding(true);
+      setGeocodingError(null);
+      
+      // Validate required fields
+      if (!formData.name || !formData.address || !formData.city || !formData.state) {
+        setGeocodingError('Please fill in all required fields (name, address, city, and state)');
+        return;
+      }
+      
       // Geocode the address first
-      const geocodeResponse = await geocodeAddress();
-
+      console.log('Attempting to geocode address...');
+      let geocodeResponse;
+      
+      try {
+        geocodeResponse = await geocodeAddress();
+      } catch (error: any) {
+        console.error('Geocoding failed:', error.message);
+        setGeocodingError(error.message || 'Could not find location for this address');
+        return;
+      }
+      
       if (!geocodeResponse) {
         setGeocodingError('Could not find location for this address');
         return;
       }
 
+      console.log('Geocoding successful, submitting junkyard data...');
+      
       const submitData = {
         ...formData,
         location: {
@@ -262,10 +320,13 @@ const AddJunkyardForm: React.FC<AddJunkyardFormProps> = ({ open, onClose, onSubm
       };
 
       await onSubmit(submitData);
+      console.log('Junkyard saved successfully');
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving junkyard:', error);
-      setGeocodingError('Failed to create junkyard. Please try again.');
+      setGeocodingError(error.message || 'Failed to create junkyard. Please try again.');
+    } finally {
+      setIsGeocoding(false);
     }
   };
 

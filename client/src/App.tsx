@@ -101,6 +101,7 @@ function App() {
   });
   const [markerIcon, setMarkerIcon] = useState<google.maps.Symbol | google.maps.Icon | undefined>(undefined);
   const [currentZoom, setCurrentZoom] = useState<number>(4);
+  const [isMovingMap, setIsMovingMap] = useState(false);
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -116,17 +117,26 @@ function App() {
   const onMapUnmount = useCallback(() => {
     mapRef.current = null;
   }, []);
+  
+  const onMapDragStart = useCallback(() => {
+    setIsMovingMap(true);
+  }, []);
 
   const onMapIdle = useCallback(() => {
     if (mapRef.current) {
       const center = mapRef.current.getCenter()?.toJSON();
       const zoom = mapRef.current.getZoom();
       if (center && zoom) {
-        mapStateRef.current = { center, zoom };
+        // Always update the current zoom for marker sizing
         setCurrentZoom(zoom);
+        
+        // Only update the stored reference if not in calculating distance mode
+        if (!isCalculatingDistance) {
+          mapStateRef.current = { center, zoom };
+        }
       }
     }
-  }, []);
+  }, [isCalculatingDistance]);
 
   const clearRoute = useCallback(() => {
     if (directionsRenderer) {
@@ -488,7 +498,15 @@ function App() {
           mapTypeControl: true,
           fullscreenControl: true,
           gestureHandling: 'greedy',
-          mapTypeId: 'hybrid'
+          mapTypeId: 'hybrid',
+          restriction: {
+            latLngBounds: {
+              north: 85,
+              south: -85,
+              west: -180,
+              east: 180
+            }
+          }
         }}
       >
         {MapMarkers}
